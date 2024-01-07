@@ -110,7 +110,7 @@ watch(
 
 <template>
   <div class="main-container">
-    <h1 class="section-title">Kanban</h1>
+    <h1 class="section-title">Task Kanban</h1>
     <br />
 
     <div class="kanban-container" ref="el">
