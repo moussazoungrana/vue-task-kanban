@@ -20,19 +20,20 @@ useSortable(el, props.status.tasks, {
     put: true
   },
   handle: '.kanban-card',
+  draggable: '.kanban-card',
   animation: 200,
   onEnd: (e: any) => {
     const taskId: number = +e.clone.dataset.id
+    const oldIndex: number = +e.oldIndex
     const newIndex: number = +e.newIndex
     const newStatusId: number = +e.to.dataset.status
 
     let statuses: ITaskStatus[] = Storage.get('kanban').statuses
     if (props.status.id === newStatusId) return
     let task: ITask = props.status.tasks.find((item) => item.id === taskId) as ITask
-    const taskOldIndex = props.status.tasks.findIndex((item) => item.id === taskId)
     const oldStatusIndex = statuses.findIndex((item: ITaskStatus) => item.id === props.status.id)
     const newStatusIndex = statuses.findIndex((item: ITaskStatus) => item.id === newStatusId)
-    statuses[oldStatusIndex].tasks.splice(taskOldIndex, 1)
+    statuses[oldStatusIndex].tasks.splice(oldIndex, 1)
     statuses[newStatusIndex].tasks.splice(newIndex, 0, task)
     Storage.put('kanban', {
       statuses: statuses

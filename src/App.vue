@@ -11,6 +11,7 @@ const el = ref<HTMLElement | null>(null)
 
 useSortable(el, statuses, {
   handle: '.kanban-status',
+  draggable: '.kanban-status',
   animation: 200
 })
 
