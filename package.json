@@ -14,9 +14,8 @@
   },
   "dependencies": {
     "@vueuse/core": "^10.7.1",
-    "@vueuse/integrations": "^10.7.1",
-    "sortablejs": "^1",
-    "vue": "^3.3.11"
+    "vue": "^3.3.11",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.3.3",

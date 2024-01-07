@@ -3,17 +3,9 @@ import type { ITaskStatus } from '@/types/ITaskStatus'
 import { ref, type Ref, watch } from 'vue'
 import KanbanStatus from '@/components/KanbanStatus.vue'
 import Storage from '@/utils/Storage'
-import { useSortable } from '@vueuse/integrations/useSortable'
+import draggable from 'vuedraggable'
 
 const statuses: Ref<ITaskStatus[]> = ref([])
-
-const el = ref<HTMLElement | null>(null)
-
-useSortable(el, statuses, {
-  handle: '.kanban-status',
-  draggable: '.kanban-status',
-  animation: 100
-})
 
 const defaultStatuses: ITaskStatus[] = [
   {
@@ -94,6 +86,12 @@ if (Storage.has('kanban')) {
   statuses.value = Storage.get('kanban').statuses
 }
 
+const refreshStatuses = () => {
+  if (Storage.has('kanban')) {
+    statuses.value = Storage.get('kanban').statuses
+  }
+}
+
 watch(
   statuses,
   () => {
@@ -114,11 +112,18 @@ watch(
     <h1 class="section-title">Task Kanban</h1>
     <br />
 
-    <div class="kanban-container" ref="el">
-      <template v-for="(status,index) in statuses" :key="'status-' + status.id">
-        <kanban-status :status="status"></kanban-status>
+    <draggable
+      class="kanban-container"
+      v-model="statuses"
+      handle=".kanban-status"
+      draggable=".kanban-status"
+      animation="100"
+      item-key="id"
+    >
+      <template #item="{ element, index }">
+        <kanban-status @taskChanged="refreshStatuses" :status="element"></kanban-status>
       </template>
-    </div>
+    </draggable>
   </div>
 </template>
 

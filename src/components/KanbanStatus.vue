@@ -2,44 +2,15 @@
 import type { ITaskStatus } from '@/types/ITaskStatus'
 import TaskCard from '@/components/TaskCard.vue'
 import { ref, toRef, watch } from 'vue'
-import { useSortable } from '@vueuse/integrations/useSortable'
 import Storage from '@/utils/Storage'
-import type { ITask } from '@/types/ITask'
+import draggable from 'vuedraggable'
 
 const props = defineProps<{
   status: ITaskStatus
 }>()
 
-const el = ref<HTMLElement | null>(null)
 const tasks = toRef(props.status.tasks)
-
-useSortable(el, tasks, {
-  group: {
-    name: 'status',
-    pull: true,
-    put: true
-  },
-  handle: '.kanban-card',
-  draggable: '.kanban-card',
-  animation: 100,
-  onEnd: (e: any) => {
-    const taskId: number = +e.clone.dataset.id
-    const oldIndex: number = +e.oldIndex
-    const newIndex: number = +e.newIndex
-    const newStatusId: number = +e.to.dataset.status
-
-    let statuses: ITaskStatus[] = Storage.get('kanban').statuses
-    if (props.status.id === newStatusId) return
-    let task: ITask = props.status.tasks.find((item) => item.id === taskId) as ITask
-    const oldStatusIndex = statuses.findIndex((item: ITaskStatus) => item.id === props.status.id)
-    const newStatusIndex = statuses.findIndex((item: ITaskStatus) => item.id === newStatusId)
-    statuses[oldStatusIndex].tasks.splice(oldIndex, 1)
-    statuses[newStatusIndex].tasks.splice(newIndex, 0, task)
-    Storage.put('kanban', {
-      statuses: statuses
-    })
-  }
-})
+const emit = defineEmits(['taskChanged'])
 
 watch(
   tasks,
@@ -60,7 +31,9 @@ watch(
   }
 )
 
-
+const handleEnd = (e: any) => {
+  emit('taskChanged')
+}
 </script>
 
 <template>
@@ -68,16 +41,23 @@ watch(
     <div class="status-header" :style="{ borderColor: props.status.color + '66' }">
       <span>{{ status.name }}</span>
     </div>
-    <div
+
+    <draggable
       class="status-container"
+      v-model="tasks"
+      handle=".kanban-card"
+      draggable=".kanban-card"
+      animation="100"
+      item-key="id"
+      :group="{ name: 'status', pull: true, put: true }"
       :style="{ borderColor: props.status.color + '66' }"
-      ref="el"
       :data-status="status.id"
+      @end="handleEnd"
     >
-      <template v-for="(task,index) in tasks" :key="`task-${task.id}`">
-        <task-card :task="task"></task-card>
+      <template #item="{ element, index }">
+        <task-card :task="element"></task-card>
       </template>
-    </div>
+    </draggable>
   </div>
 </template>
 
