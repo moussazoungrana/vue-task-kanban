@@ -15,7 +15,7 @@ const tasks = toRef(props.status.tasks)
 
 useSortable(el, props.status.tasks, {
   group: {
-    name: 'status' + props.status.id,
+    name: 'status',
     pull: true,
     put: true
   },
