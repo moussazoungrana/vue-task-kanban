@@ -12,10 +12,10 @@ const el = ref<HTMLElement | null>(null)
 useSortable(el, statuses, {
   handle: '.kanban-status',
   draggable: '.kanban-status',
-  animation: 200
+  animation: 100
 })
 
-const defaultStatues: ITaskStatus[] = [
+const defaultStatuses: ITaskStatus[] = [
   {
     id: 1,
     name: 'Todo',
@@ -86,7 +86,7 @@ const defaultStatues: ITaskStatus[] = [
 
 if (!Storage.has('kanban')) {
   Storage.put('kanban', {
-    statuses: defaultStatues
+    statuses: defaultStatuses
   })
 }
 
@@ -115,7 +115,7 @@ watch(
     <br />
 
     <div class="kanban-container" ref="el">
-      <template v-for="status in statuses" :key="'status-' + status.id">
+      <template v-for="(status,index) in statuses" :key="'status-' + status.id">
         <kanban-status :status="status"></kanban-status>
       </template>
     </div>

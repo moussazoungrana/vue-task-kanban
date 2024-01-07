@@ -13,7 +13,7 @@ const props = defineProps<{
 const el = ref<HTMLElement | null>(null)
 const tasks = toRef(props.status.tasks)
 
-useSortable(el, props.status.tasks, {
+useSortable(el, tasks, {
   group: {
     name: 'status',
     pull: true,
@@ -21,7 +21,7 @@ useSortable(el, props.status.tasks, {
   },
   handle: '.kanban-card',
   draggable: '.kanban-card',
-  animation: 200,
+  animation: 100,
   onEnd: (e: any) => {
     const taskId: number = +e.clone.dataset.id
     const oldIndex: number = +e.oldIndex
@@ -55,9 +55,12 @@ watch(
     })
   },
   {
+    immediate: true,
     deep: true
   }
 )
+
+
 </script>
 
 <template>
@@ -71,7 +74,7 @@ watch(
       ref="el"
       :data-status="status.id"
     >
-      <template v-for="task in tasks" :key="`task-${task.id}`">
+      <template v-for="(task,index) in tasks" :key="`task-${task.id}`">
         <task-card :task="task"></task-card>
       </template>
     </div>
